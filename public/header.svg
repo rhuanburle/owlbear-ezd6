@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630" fill="none">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1b2410"/>
+      <stop offset="1" stop-color="#0f1408"/>
+    </linearGradient>
+    <linearGradient id="green" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#8fd94a"/>
+      <stop offset="1" stop-color="#5a8f28"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+
+  <!-- Hexágono EZ D6 -->
+  <g transform="translate(600 220)">
+    <polygon points="0,-150 130,-75 130,75 0,150 -130,75 -130,-75" fill="url(#green)"/>
+    <text x="0" y="-8" text-anchor="middle" font-family="Trebuchet MS, Arial, sans-serif" font-weight="900" font-size="120" fill="#12240a">EZ</text>
+    <text x="0" y="95" text-anchor="middle" font-family="Trebuchet MS, Arial, sans-serif" font-weight="900" font-size="86" fill="#12240a">D6</text>
+  </g>
+
+  <text x="600" y="470" text-anchor="middle" font-family="Trebuchet MS, Arial, sans-serif" font-weight="900" font-size="82" fill="#ececf0">EZD6 Toolkit</text>
+  <text x="600" y="535" text-anchor="middle" font-family="Trebuchet MS, Arial, sans-serif" font-size="34" fill="#9fbf72">Rolador · Ficha · Combate · Magia — em português</text>
+
+  <!-- dadinhos decorativos -->
+  <g fill="#8fd94a" opacity="0.9">
+    <circle cx="170" cy="150" r="14"/><circle cx="230" cy="150" r="14"/>
+    <circle cx="170" cy="210" r="14"/><circle cx="230" cy="210" r="14"/>
+    <circle cx="1030" cy="430" r="14"/><circle cx="970" cy="470" r="14"/><circle cx="1030" cy="470" r="14"/>
+    <circle cx="1030" cy="510" r="14"/><circle cx="970" cy="430" r="14"/><circle cx="970" cy="510" r="14"/>
+  </g>
+</svg>
