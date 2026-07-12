@@ -4,7 +4,27 @@ Extensão **não-oficial** para o [Owlbear Rodeo](https://www.owlbear.rodeo/) qu
 automatiza o sistema de RPG **EZD6** (em português), pensada para facilitar a
 jogatina — inclusive com crianças.
 
-## Recursos
+**🔗 Extensão publicada:** https://owlbear-ezd6.web.app
+
+## 📥 Como instalar no Owlbear Rodeo
+
+1. No Owlbear, abra o menu de **perfil** → **Add Extension**.
+2. Cole a URL do manifest:
+   ```
+   https://owlbear-ezd6.web.app/manifest.json
+   ```
+3. Confirme. A extensão (ícone de dado verde 🟢) aparece na barra de ferramentas.
+
+### Para a sua mesa (jogadores)
+
+O **mestre** (dono da sala) habilita a extensão nas configurações da sala. Os
+**jogadores que entram pelo link da sala já recebem a extensão automaticamente** —
+não precisam instalar nem colar a URL.
+
+> Em breve também no catálogo oficial ([extensions.owlbear.rodeo](https://extensions.owlbear.rodeo/)),
+> para instalar com 1 clique (submissão em revisão).
+
+## ✨ Recursos
 
 - 🎲 **Rolador EZD6**: Trunfo/Estorvo, dificuldade definida pelo mestre, 1 = falha,
   6 = sucesso/crítico, com animação de dados e histórico compartilhado na sala.
@@ -20,7 +40,7 @@ jogatina — inclusive com crianças.
 - 👑 **Tela do mestre**: vê as fichas dos jogadores e ajusta Karma, Vida (Golpes/cura),
   Dados Heroicos e Descanso.
 
-## Desenvolvimento
+## 🛠️ Desenvolvimento
 
 ```bash
 npm install
@@ -28,8 +48,19 @@ npm run dev      # sobe em http://localhost:5173
 npm run build    # gera dist/ para produção
 ```
 
-Para testar dentro do Owlbear em desenvolvimento: no seu perfil, **Add Extension** →
-cole `http://localhost:5173/manifest.json`.
+Para testar dentro do Owlbear em desenvolvimento: **Add Extension** →
+`http://localhost:5173/manifest.json`.
+
+## 🚀 Deploy
+
+Hospedado no **Firebase Hosting** (domínio-raiz, grátis). Deploy manual:
+
+```bash
+npm run build && firebase deploy --only hosting
+```
+
+O deploy também é **automático**: todo push na branch `main` publica via GitHub Actions
+(veja `.github/workflows/deploy.yml`).
 
 ## Stack
 
