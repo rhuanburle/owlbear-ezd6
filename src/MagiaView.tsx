@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { rolarUmDado } from "./ezd6";
 import {
   avaliarConjuracao,
@@ -15,6 +15,14 @@ import "./MagiaView.css";
 interface Props {
   ficha: Ficha;
   atualizar: (patch: Partial<Ficha> | ((f: Ficha) => Partial<Ficha>)) => void;
+  logar: (m: {
+    id: string;
+    modo: "feitico" | "pergaminho" | "milagre";
+    dados: number[];
+    oposicao: number[];
+    texto: string;
+    desfecho: "sucesso" | "falha" | "critico";
+  }) => void;
 }
 
 type Modo = "feitico" | "pergaminho" | "milagre";
@@ -30,7 +38,7 @@ const MODOS: { id: Modo; nome: string }[] = [
   { id: "milagre", nome: "🙏 Milagre" },
 ];
 
-export default function MagiaView({ ficha, atualizar }: Props) {
+export default function MagiaView({ ficha, atualizar, logar }: Props) {
   const [modo, setModo] = useState<Modo>("feitico");
   const [np, setNp] = useState<NivelPoder>(1);
   const [oposicaoDados, setOposicaoDados] = useState(1); // resistência ou indiferença
@@ -38,11 +46,29 @@ export default function MagiaView({ ficha, atualizar }: Props) {
   const [resultado, setResultado] = useState<Resultado | null>(null);
   const resultadoRef = useRef(resultado);
   resultadoRef.current = resultado;
+  const idRef = useRef(""); // id do lançamento atual (mantido nas atualizações)
 
   function definirResultado(r: Resultado | null) {
     resultadoRef.current = r;
     setResultado(r);
   }
+
+  // Registra no histórico compartilhado sempre que o resultado muda (mesma id => atualiza).
+  useEffect(() => {
+    if (!resultado) return;
+    let texto = "";
+    let desfecho: "sucesso" | "falha" | "critico";
+    if (modo === "milagre") {
+      const a = avaliarMilagre(resultado.dados, resultado.oposicao);
+      texto = textoMilagre(a);
+      desfecho = a.desfecho === "falha" ? "falha" : a.desfecho === "dissipado" ? "critico" : "sucesso";
+    } else {
+      const a = avaliarConjuracao(resultado.dados, resultado.oposicao, resultado.refluxo);
+      texto = textoConjuracao(a);
+      desfecho = a.desfecho === "falha" ? "falha" : a.desfecho === "falha-1" ? "critico" : "sucesso";
+    }
+    logar({ id: idRef.current, modo, dados: resultado.dados, oposicao: resultado.oposicao, texto, desfecho });
+  }, [resultado, modo]);
 
   const ehMilagre = modo === "milagre";
   const ehPergaminho = modo === "pergaminho";
@@ -51,6 +77,7 @@ export default function MagiaView({ ficha, atualizar }: Props) {
   const oposicaoTotal = oposicaoDados + (usaAlvos ? alvos - 1 : 0);
 
   function lancar() {
+    idRef.current = crypto.randomUUID();
     const dados = ehPergaminho ? rolarPergaminho() : rolarDadosMagia(np);
     definirResultado({ dados, oposicao: rolarDadosMagia(oposicaoTotal), refluxo: false });
   }

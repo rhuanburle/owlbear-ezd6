@@ -27,7 +27,7 @@ import {
   quandoPronto,
   salvarFicha,
 } from "./obr";
-import type { Jogador, LogEntry } from "./obr";
+import type { EntradaMagia, EntradaRolagem, Jogador, LogEntry } from "./obr";
 import { FICHA_PADRAO } from "./ficha";
 import type { Ficha } from "./ficha";
 import FichaView from "./FichaView";
@@ -122,7 +122,7 @@ export default function App() {
   // A MINHA rolagem atual (editável): fonte síncrona local, independente do log
   // (que só atualiza após o eco do broadcast). Evita perder a janela de edição
   // quando outro jogador rola, e evita duplo-débito em cliques rápidos.
-  const [minhaEntrada, setMinhaEntrada] = useState<LogEntry | null>(null);
+  const [minhaEntrada, setMinhaEntrada] = useState<EntradaRolagem | null>(null);
   // Karma "em preparação" (ainda não confirmado): o jogador escolhe quanto e clica OK.
   const [karmaStage, setKarmaStage] = useState(0);
   const [karmaCritStage, setKarmaCritStage] = useState(0);
@@ -190,13 +190,37 @@ export default function App() {
   }, []);
 
   /** Aplica uma mudança na minha rolagem (síncrono no ref) e transmite (mesma id => substitui em todos). */
-  function aplicarMinha(mut: (e: LogEntry) => LogEntry) {
+  function aplicarMinha(mut: (e: EntradaRolagem) => EntradaRolagem) {
     const atual = minhaRef.current;
     if (!atual) return;
     const nova = mut(atual);
     minhaRef.current = nova;
     setMinhaEntrada(nova);
     enviarRolagem(nova);
+  }
+
+  /** Registra uma mágica/pergaminho/milagre no histórico compartilhado (mesma id => atualiza). */
+  function registrarMagia(m: {
+    id: string;
+    modo: EntradaMagia["modo"];
+    dados: number[];
+    oposicao: number[];
+    texto: string;
+    desfecho: EntradaMagia["desfecho"];
+  }) {
+    const entry: EntradaMagia = {
+      tipo: "magia",
+      id: m.id,
+      autor: jogadorRef.current.nome,
+      cor: jogadorRef.current.cor,
+      modo: m.modo,
+      dados: m.dados,
+      oposicao: m.oposicao,
+      texto: m.texto,
+      desfecho: m.desfecho,
+      timestamp: Date.now(),
+    };
+    enviarRolagem(entry);
   }
 
   /** Atualiza a ficha (fonte da verdade das mecânicas) e persiste com debounce.
@@ -233,7 +257,8 @@ export default function App() {
   function handleRolar() {
     animarRolagem();
     const rolagem = rolar({ alvo: alvoRef.current, trunfos, estorvos });
-    const entry: LogEntry = {
+    const entry: EntradaRolagem = {
+      tipo: "rolagem",
       id: crypto.randomUUID(),
       autor: jogadorRef.current.nome,
       cor: jogadorRef.current.cor,
@@ -359,7 +384,9 @@ export default function App() {
         )}
       </nav>
 
-      {aba === "magia" && <MagiaView ficha={ficha} atualizar={atualizarFicha} />}
+      {aba === "magia" && (
+        <MagiaView ficha={ficha} atualizar={atualizarFicha} logar={registrarMagia} />
+      )}
       {aba === "ficha" && <FichaView ficha={ficha} atualizar={atualizarFicha} />}
       {aba === "mesa" && ehMestre && <MesaView />}
 
@@ -610,6 +637,23 @@ export default function App() {
         {log.length === 0 && <p className="vazio">Nenhuma rolagem ainda. Aperte ROLAR!</p>}
         <ul>
           {log.map((entry) => {
+            if (entry.tipo === "magia") {
+              const icone =
+                entry.modo === "milagre" ? "🙏" : entry.modo === "pergaminho" ? "📜" : "🔮";
+              return (
+                <li key={entry.id} className={`desfecho-${entry.desfecho}`}>
+                  <span className="autor" style={{ color: entry.cor }}>
+                    {entry.autor}
+                  </span>
+                  <span className="mini-dados">
+                    {icone} {entry.dados.join(", ")}
+                    <i className="mini-karma"> vs {entry.oposicao.join(", ")}</i>
+                  </span>
+                  <span className="alvo-mini" />
+                  <span className="desfecho-mini">{entry.texto}</span>
+                </li>
+              );
+            }
             const a = avaliar(entry.rolagem, entry.karma);
             return (
               <li key={entry.id} className={`desfecho-${a.desfecho}`}>

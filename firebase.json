@@ -1,0 +1,12 @@
+{
+  "hosting": {
+    "public": "dist",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "headers": [
+      {
+        "source": "**/*.@(json|js|css|svg|html)",
+        "headers": [{ "key": "Access-Control-Allow-Origin", "value": "*" }]
+      }
+    ]
+  }
+}

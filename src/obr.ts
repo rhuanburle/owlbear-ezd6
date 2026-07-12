@@ -14,7 +14,9 @@ const CHAVE_COMBATE = "com.ezd6.toolkit/combate";
 
 export type Papel = "GM" | "PLAYER";
 
-export interface LogEntry {
+/** Entrada de rolagem comum (dados de ação). */
+export interface EntradaRolagem {
+  tipo: "rolagem";
   id: string;
   autor: string;
   cor: string;
@@ -32,6 +34,22 @@ export interface LogEntry {
   heroicoUsado?: boolean;
   timestamp: number;
 }
+
+/** Entrada de mágica / pergaminho / milagre (para o histórico compartilhado). */
+export interface EntradaMagia {
+  tipo: "magia";
+  id: string;
+  autor: string;
+  cor: string;
+  modo: "feitico" | "pergaminho" | "milagre";
+  dados: number[];
+  oposicao: number[];
+  texto: string;
+  desfecho: "sucesso" | "falha" | "critico";
+  timestamp: number;
+}
+
+export type LogEntry = EntradaRolagem | EntradaMagia;
 
 export interface Jogador {
   nome: string;
