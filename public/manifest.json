@@ -1,0 +1,15 @@
+{
+  "name": "EZD6 Toolkit",
+  "version": "0.1.0",
+  "manifest_version": 1,
+  "author": "Rhuan",
+  "description": "Rolador de dados e ferramentas para o sistema EZD6 (em português).",
+  "icon": "/icon.svg",
+  "action": {
+    "title": "EZD6 Toolkit",
+    "icon": "/icon.svg",
+    "popover": "/",
+    "height": 640,
+    "width": 400
+  }
+}

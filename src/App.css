@@ -1,0 +1,658 @@
+:root {
+  --verde: #7bc043;
+  --verde-escuro: #4a7a23;
+  --sucesso: #22c55e;
+  --falha: #ef4444;
+  --critico: #fbbf24;
+  --karma: #f59e0b;
+  --bg: #1b1b1e;
+  --bg2: #2a2a30;
+  --texto: #ececf0;
+  --texto-fraco: #9a9aa5;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+.app {
+  font-family: "Trebuchet MS", system-ui, sans-serif;
+  color: var(--texto);
+  padding: 12px;
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* ---------- Topo ---------- */
+.topo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.logo {
+  font-weight: 900;
+  font-size: 28px;
+  letter-spacing: -1px;
+  line-height: 1;
+}
+.logo span {
+  color: var(--verde);
+}
+.jogador {
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 2px solid var(--verde);
+  border-radius: 999px;
+  background: var(--bg2);
+}
+
+/* ---------- Abas ---------- */
+.abas {
+  display: flex;
+  gap: 6px;
+  background: var(--bg2);
+  padding: 4px;
+  border-radius: 12px;
+}
+.abas button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--texto-fraco);
+  font-size: 15px;
+  font-weight: bold;
+  padding: 10px;
+  border-radius: 9px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.abas button.ativo {
+  background: var(--verde-escuro);
+  color: #dff5c8;
+}
+
+/* ---------- Ganhar Karma pela falha ---------- */
+.karma-ganho-btn {
+  margin-top: 10px;
+  width: 100%;
+  border: 2px solid var(--karma);
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--karma);
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+.karma-ganho-btn:active {
+  transform: scale(0.98);
+}
+.karma-pool {
+  color: var(--karma);
+}
+
+/* ---------- Alvo / dificuldade ---------- */
+.alvo-secao label,
+.historico h2 {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--texto-fraco);
+  margin: 0 0 6px;
+  display: block;
+}
+.alvo-botoes {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 6px;
+}
+.alvo-botoes button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--bg2);
+  color: var(--texto);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.alvo-botoes button strong {
+  font-size: 18px;
+}
+.alvo-botoes button small {
+  font-size: 9px;
+  color: var(--texto-fraco);
+  text-align: center;
+  line-height: 1.1;
+}
+.alvo-botoes button.ativo {
+  border-color: var(--verde);
+  background: var(--verde-escuro);
+}
+.alvo-botoes button.ativo small {
+  color: #dff5c8;
+}
+
+/* ---------- Modo combate ---------- */
+.combate-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.combate-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  border: 2px solid #3a3a44;
+  border-radius: 10px;
+  background: var(--bg2);
+  color: var(--texto-fraco);
+  font-weight: bold;
+  font-size: 14px;
+  cursor: pointer;
+}
+.combate-toggle.ativo {
+  border-color: var(--falha);
+  color: var(--texto);
+  background: rgba(239, 68, 68, 0.15);
+}
+.combate-estado {
+  font-size: 12px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: #3a3a44;
+}
+.combate-toggle.ativo .combate-estado {
+  background: var(--falha);
+  color: #fff;
+}
+.combate-dica {
+  font-size: 11px;
+  color: var(--texto-fraco);
+  text-align: center;
+}
+.combate-badge {
+  text-align: center;
+  font-weight: bold;
+  font-size: 13px;
+  color: var(--falha);
+  background: rgba(239, 68, 68, 0.12);
+  border-radius: 8px;
+  padding: 6px;
+}
+
+/* ---------- Steppers ---------- */
+.modificadores {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+}
+.modificadores.modificadores-2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+.stepper {
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 8px;
+  text-align: center;
+}
+.stepper-rotulo {
+  font-size: 12px;
+  font-weight: bold;
+  text-transform: uppercase;
+}
+.stepper-controles {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 6px;
+}
+.stepper-controles button {
+  width: 30px;
+  height: 30px;
+  font-size: 20px;
+  border: none;
+  border-radius: 8px;
+  background: #3a3a44;
+  color: var(--texto);
+  cursor: pointer;
+}
+.stepper-controles button:active {
+  transform: scale(0.9);
+}
+.stepper-valor {
+  font-size: 20px;
+  font-weight: bold;
+  min-width: 24px;
+}
+
+.dica-saldo {
+  text-align: center;
+  font-size: 13px;
+  color: var(--texto-fraco);
+  margin: 0;
+}
+
+/* ---------- Botão rolar ---------- */
+.rolar {
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 16px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, var(--verde), var(--verde-escuro));
+  color: #12240a;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #35560f;
+}
+.rolar:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #35560f;
+}
+
+/* ---------- Dados (pips) ---------- */
+.dado {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  grid-template-rows: repeat(3, 1fr);
+  gap: 2px;
+  padding: 6px;
+  border-radius: 10px;
+  background: #f4f4ef;
+  aspect-ratio: 1;
+}
+.dado.grande {
+  width: 62px;
+  height: 62px;
+}
+.dado:not(.grande) {
+  width: 30px;
+  height: 30px;
+}
+.dado.descartado {
+  opacity: 0.35;
+  transform: scale(0.85);
+}
+.dado.escolhido {
+  outline: 3px solid var(--verde);
+  outline-offset: 1px;
+}
+.dado.rolando {
+  animation: tumble 0.22s linear infinite;
+}
+@keyframes tumble {
+  0% { transform: rotate(-10deg) scale(1.06); }
+  50% { transform: rotate(10deg) scale(0.94); }
+  100% { transform: rotate(-10deg) scale(1.06); }
+}
+.pip {
+  border-radius: 50%;
+  background: transparent;
+  align-self: center;
+  justify-self: center;
+  width: 70%;
+  height: 70%;
+}
+.pip.on {
+  background: #1b1b1e;
+}
+
+/* ---------- Resultado ---------- */
+.resultado {
+  border-radius: 14px;
+  padding: 14px;
+  text-align: center;
+  background: var(--bg2);
+  border: 3px solid var(--bg2);
+}
+.dados-linha {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.desfecho-texto {
+  font-size: 24px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+.detalhe {
+  font-size: 13px;
+  color: var(--texto-fraco);
+  margin-top: 4px;
+}
+
+.desfecho-sucesso {
+  border-color: var(--sucesso);
+}
+.desfecho-sucesso .desfecho-texto {
+  color: var(--sucesso);
+}
+.desfecho-falha {
+  border-color: var(--falha);
+}
+.desfecho-falha .desfecho-texto {
+  color: var(--falha);
+}
+.desfecho-critico {
+  border-color: var(--critico);
+  animation: pulso 0.6s ease;
+}
+.desfecho-critico .desfecho-texto {
+  color: var(--critico);
+}
+@keyframes pulso {
+  0% { transform: scale(0.9); }
+  50% { transform: scale(1.04); }
+  100% { transform: scale(1); }
+}
+
+/* ---------- Histórico ---------- */
+.historico .vazio {
+  color: var(--texto-fraco);
+  font-size: 13px;
+  text-align: center;
+}
+.historico ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-height: 220px;
+  overflow-y: auto;
+}
+.historico li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--bg2);
+  border-left: 4px solid var(--bg2);
+  animation: entrada-log 0.3s ease;
+}
+@keyframes entrada-log {
+  from { opacity: 0; transform: translateY(-6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.historico li.desfecho-sucesso { border-left-color: var(--sucesso); }
+.historico li.desfecho-falha { border-left-color: var(--falha); }
+.historico li.desfecho-critico { border-left-color: var(--critico); }
+.historico .autor {
+  font-weight: bold;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.historico .mini-dados {
+  display: flex;
+  gap: 3px;
+}
+.historico .mini-dados b {
+  background: #3a3a44;
+  color: var(--texto-fraco);
+  border-radius: 4px;
+  padding: 1px 5px;
+  font-size: 11px;
+}
+.historico .mini-dados b.vale {
+  background: var(--verde);
+  color: #12240a;
+}
+.historico .alvo-mini {
+  color: var(--texto-fraco);
+  font-size: 10px;
+}
+.historico .desfecho-mini {
+  font-weight: bold;
+  grid-column: 1 / -1;
+  font-size: 11px;
+}
+
+.aviso-teste {
+  font-size: 11px;
+  color: var(--texto-fraco);
+  text-align: center;
+  border-top: 1px dashed #3a3a44;
+  padding-top: 8px;
+}
+
+/* ---------- Papel de mestre ---------- */
+.jogador {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.tag-mestre {
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  background: var(--critico);
+  color: #3a2a00;
+  border-radius: 4px;
+  padding: 1px 5px;
+}
+
+/* ---------- Alvo em modo leitura (jogador) ---------- */
+.alvo-fixo {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+  gap: 10px;
+  background: var(--bg2);
+  border: 2px solid var(--verde);
+  border-radius: 12px;
+  padding: 12px;
+}
+.alvo-fixo strong {
+  font-size: 32px;
+  color: var(--verde);
+}
+.alvo-fixo span {
+  font-size: 14px;
+  color: var(--texto-fraco);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+/* ---------- Confirmação de crítico ---------- */
+.critico-area {
+  margin-top: 12px;
+  padding-top: 12px;
+  border-top: 1px dashed #5a4a1a;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+.dados-linha.criticos {
+  margin: 0;
+}
+.golpes {
+  font-size: 18px;
+  font-weight: 900;
+  color: var(--critico);
+}
+.confirmar-critico {
+  font-size: 16px;
+  font-weight: 800;
+  padding: 12px 18px;
+  border: none;
+  border-radius: 12px;
+  background: linear-gradient(180deg, var(--critico), #d97706);
+  color: #3a2a00;
+  cursor: pointer;
+  box-shadow: 0 3px 0 #a15c04;
+  animation: pulso 0.6s ease;
+}
+.confirmar-critico:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #a15c04;
+}
+
+/* ---------- Karma pós-rolagem ---------- */
+.karma-controle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+  font-size: 13px;
+}
+.karma-controle b {
+  color: var(--karma);
+  font-size: 16px;
+}
+.karma-botoes {
+  display: flex;
+  gap: 6px;
+}
+.karma-botoes button {
+  border: none;
+  border-radius: 8px;
+  background: var(--karma);
+  color: #3a2a00;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 6px 10px;
+  cursor: pointer;
+}
+.karma-botoes button:first-child {
+  padding: 6px 12px;
+  background: #3a3a44;
+  color: var(--texto);
+}
+.karma-botoes button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+.aviso-um {
+  color: var(--falha);
+}
+.karma-stage {
+  margin-top: 10px;
+  width: 100%;
+}
+.karma-num {
+  color: var(--karma);
+  font-size: 18px;
+  min-width: 22px;
+  text-align: center;
+}
+.karma-previa {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--texto-fraco);
+  flex-wrap: wrap;
+}
+.karma-previa b {
+  color: var(--texto);
+}
+.ok-karma {
+  border: none;
+  border-radius: 8px;
+  background: var(--sucesso);
+  color: #06230f;
+  font-weight: 900;
+  font-size: 14px;
+  padding: 6px 18px;
+  cursor: pointer;
+  box-shadow: 0 2px 0 #146c34;
+}
+.ok-karma:active {
+  transform: translateY(2px);
+  box-shadow: 0 0 0 #146c34;
+}
+
+/* ---------- Dado Heroico ---------- */
+.heroico-status {
+  text-align: center;
+  font-size: 12px;
+  color: var(--texto-fraco);
+  margin-top: -4px;
+}
+.heroico-status .disp {
+  color: #a78bfa;
+  font-weight: bold;
+}
+.heroico-status .usado {
+  color: var(--falha);
+}
+.heroico-status .restaurar {
+  margin-left: 8px;
+  border: none;
+  background: #3a3a44;
+  color: var(--texto);
+  border-radius: 6px;
+  padding: 2px 8px;
+  font-size: 11px;
+  cursor: pointer;
+}
+.heroico-btn {
+  margin-top: 10px;
+  border: 2px solid #7c3aed;
+  background: rgba(124, 58, 237, 0.15);
+  color: #c4b5fd;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+}
+.heroico-btn:active {
+  transform: scale(0.98);
+}
+.heroico-btn.destaque {
+  background: linear-gradient(180deg, #8b5cf6, #6d28d9);
+  color: #fff;
+  font-size: 15px;
+  box-shadow: 0 3px 0 #4c1d95;
+  animation: pulso 0.6s ease;
+}
+
+.critico-controles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+.crit-dado {
+  position: relative;
+  display: inline-flex;
+}
+.crit-karma {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  background: var(--karma);
+  color: #3a2a00;
+  font-size: 10px;
+  font-weight: 900;
+  border-radius: 999px;
+  padding: 1px 5px;
+}
+.mini-karma {
+  color: var(--karma);
+  font-style: normal;
+  font-weight: 800;
+  font-size: 10px;
+  margin-left: 2px;
+}

@@ -1,0 +1,238 @@
+.magia {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.magia-dica {
+  font-size: 12px;
+  color: var(--texto-fraco);
+  margin: 0;
+}
+
+.modo-botoes {
+  display: flex;
+  gap: 6px;
+  background: var(--bg2);
+  padding: 4px;
+  border-radius: 10px;
+}
+.modo-botoes button {
+  flex: 1;
+  border: none;
+  background: transparent;
+  color: var(--texto-fraco);
+  font-size: 13px;
+  font-weight: bold;
+  padding: 8px 4px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.modo-botoes button.ativo {
+  background: rgba(124, 58, 237, 0.25);
+  color: #c4b5fd;
+}
+
+.conjurar.milagre {
+  background: linear-gradient(180deg, #f59e0b, #b45309);
+  box-shadow: 0 4px 0 #92400e;
+  color: #2a1a00;
+}
+.oferenda-btn {
+  border: 2px solid var(--karma);
+  background: rgba(245, 158, 11, 0.15);
+  color: var(--karma);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.oferenda-btn:active {
+  transform: scale(0.98);
+}
+
+.magia-controles {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.magia-campo {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.magia-campo > span {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-fraco);
+}
+.np-botoes {
+  display: flex;
+  gap: 6px;
+}
+.np-botoes button {
+  flex: 1;
+  border: 2px solid transparent;
+  background: var(--bg2);
+  color: var(--texto);
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.np-botoes button.ativo {
+  border-color: #a78bfa;
+  background: rgba(124, 58, 237, 0.2);
+  color: #c4b5fd;
+}
+.magia-steppers {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.mini-stepper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--bg2);
+  border-radius: 10px;
+  padding: 6px 10px;
+}
+.mini-stepper button {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 6px;
+  background: #3a3a44;
+  color: var(--texto);
+  font-size: 18px;
+  cursor: pointer;
+}
+.mini-stepper b {
+  font-size: 18px;
+}
+.magia-nota {
+  font-size: 11px;
+  color: var(--texto-fraco);
+}
+
+.conjurar {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 1px;
+  padding: 14px;
+  border: none;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #8b5cf6, #6d28d9);
+  color: #fff;
+  cursor: pointer;
+  box-shadow: 0 4px 0 #4c1d95;
+}
+.conjurar:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #4c1d95;
+}
+
+.magia-res {
+  border-radius: 14px;
+  padding: 14px;
+  background: var(--bg2);
+  border: 3px solid var(--bg2);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.magia-res.mag-sucesso {
+  border-color: var(--sucesso);
+}
+.magia-res.mag-falha {
+  border-color: var(--falha);
+}
+.magia-res.mag-aviso {
+  border-color: var(--critico);
+}
+.mag-linha {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.mag-rot {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-fraco);
+}
+.mag-dados {
+  display: flex;
+  gap: 6px;
+}
+.mag-dados b {
+  background: #3a3a44;
+  color: var(--texto-fraco);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 16px;
+}
+.mag-dados b.alto {
+  background: #52525b;
+  color: var(--texto);
+  outline: 2px solid #a78bfa;
+}
+.np-dado {
+  border: none;
+  background: #3a3a44;
+  color: var(--texto-fraco);
+  border-radius: 6px;
+  padding: 4px 10px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.np-dado.alto {
+  background: #52525b;
+  color: var(--texto);
+  outline: 2px solid #a78bfa;
+}
+.np-dado.um {
+  background: rgba(239, 68, 68, 0.3);
+  color: #fca5a5;
+}
+.np-dado:disabled {
+  cursor: default;
+}
+.mag-hint {
+  font-size: 11px;
+  color: #c4b5fd;
+  text-align: center;
+}
+.mag-desfecho {
+  font-size: 18px;
+  font-weight: 900;
+  text-align: center;
+}
+.mag-sucesso .mag-desfecho {
+  color: var(--sucesso);
+}
+.mag-falha .mag-desfecho {
+  color: var(--falha);
+}
+.mag-aviso .mag-desfecho {
+  color: var(--critico);
+}
+.refluxo-btn {
+  border: 2px solid var(--falha);
+  background: rgba(239, 68, 68, 0.15);
+  color: #fca5a5;
+  border-radius: 10px;
+  padding: 10px;
+  font-size: 14px;
+  font-weight: bold;
+  cursor: pointer;
+}
+.refluxo-btn:active {
+  transform: scale(0.98);
+}

@@ -1,0 +1,143 @@
+.mesa {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.mesa-dica {
+  font-size: 12px;
+  color: var(--texto-fraco);
+  margin: 0;
+}
+.mesa .vazio {
+  font-size: 13px;
+  color: var(--texto-fraco);
+  text-align: center;
+}
+
+.jogador-card {
+  background: var(--bg2);
+  border: 2px solid #3a3a44;
+  border-radius: 12px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.jogador-cab {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  border-left: 3px solid var(--verde);
+  padding-left: 8px;
+}
+.jogador-cab strong {
+  font-size: 16px;
+}
+.jogador-sub {
+  font-size: 12px;
+  color: var(--texto-fraco);
+}
+
+.jogador-mec {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+}
+.jm-item {
+  background: var(--bg);
+  border-radius: 8px;
+  padding: 6px 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.jm-rot {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--texto-fraco);
+}
+.jm-item b {
+  font-size: 18px;
+}
+.jm-item.vida {
+  grid-column: 1 / -1;
+}
+
+.barra-vida {
+  position: relative;
+  height: 20px;
+  background: #3a3a44;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.barra-preench {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: linear-gradient(90deg, #ef4444, #f87171);
+  transition: width 0.2s;
+}
+.barra-vida span {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: bold;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
+}
+
+.jm-botoes {
+  display: flex;
+  gap: 4px;
+  margin-top: 2px;
+}
+.jm-botoes button {
+  flex: 1;
+  border: none;
+  border-radius: 6px;
+  background: #3a3a44;
+  color: var(--texto);
+  font-size: 11px;
+  font-weight: bold;
+  padding: 4px 6px;
+  cursor: pointer;
+  white-space: nowrap;
+}
+.jm-botoes button:active {
+  transform: scale(0.95);
+}
+.jm-item.vida .jm-botoes button:first-child {
+  background: rgba(239, 68, 68, 0.25);
+}
+.jm-item.vida .jm-botoes button:last-child {
+  background: rgba(34, 197, 94, 0.25);
+}
+
+.descanso-btn {
+  border: none;
+  border-radius: 8px;
+  background: rgba(124, 58, 237, 0.2);
+  color: #c4b5fd;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 8px;
+  cursor: pointer;
+}
+.descanso-btn:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.jogador-notas {
+  font-size: 12px;
+  color: var(--texto);
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+}
+.jn-rot {
+  color: var(--texto-fraco);
+  font-weight: bold;
+}
