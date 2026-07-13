@@ -45,6 +45,17 @@ Ficha de personagem completa, fiel à ficha oficial, **sincronizada e persistent
 sala. O mestre tem uma tela para ver as fichas dos jogadores e ajustar Karma, Vida
 (Golpes/cura), Dados Heroicos e aplicar Descanso.
 
+## Cenário: Mundo Devastado (opcional)
+
+O mestre pode **ligar/desligar** o cenário pós-apocalíptico **Mundo Devastado** a
+qualquer momento (sincronizado para toda a sala). Ligado, ele acrescenta, fiel às
+regras oficiais do suplemento: **Resistência ao Miasma**, **Dados de Poder**,
+**Contaminação** e **Contágio**, **Escudo**, referência de **Cobertura**, o **Desafio
+com Conjunto de Dados**, uma aba de **Veículos** (Golpes, Salvaguarda Estrutural,
+Dano de Colisão, Teste de Manobra e Salvaguarda de Último Esforço), **Suprimentos**,
+**Morte Iminente**, **Dano Massivo** e ferramentas do mestre (**Dados de Vilania** e
+**Talismã**). A Magia é re-tematizada como **Poderes Psíquicos** (miasma).
+
 ---
 
 *EZD6 é de autoria de Scotty McFarland / Rune Hammer Games; versão em português por

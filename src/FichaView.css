@@ -311,3 +311,57 @@
   background: var(--verde);
   box-shadow: inset 0 0 0 2px var(--bg2);
 }
+
+/* ---------- Cenário "Mundo Devastado" ---------- */
+.md-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  border: 2px solid rgba(34, 197, 94, 0.4);
+  border-radius: 12px;
+  padding: 12px;
+  background: rgba(34, 197, 94, 0.05);
+}
+.md-titulo {
+  margin: 0;
+  font-size: 14px;
+  color: var(--sucesso);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+.md-grade {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+.md-escudo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.md-escudo input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--sucesso);
+}
+.md-escudo small {
+  font-weight: 400;
+  color: var(--texto-fraco);
+}
+.mec-valor.perigo-txt {
+  color: var(--falha);
+}
+.md-contaminacao {
+  border-color: rgba(132, 204, 22, 0.4);
+}
+.massivo-res {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--texto);
+}

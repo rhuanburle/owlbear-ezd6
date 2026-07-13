@@ -23,6 +23,8 @@ interface Props {
     texto: string;
     desfecho: "sucesso" | "falha" | "critico";
   }) => void;
+  /** Cenário "Mundo Devastado" ligado: re-tematiza a magia como Poderes Psíquicos (mesma mecânica). */
+  cenario?: boolean;
 }
 
 type Modo = "feitico" | "pergaminho" | "milagre";
@@ -32,13 +34,22 @@ interface Resultado {
   refluxo: boolean;
 }
 
-const MODOS: { id: Modo; nome: string }[] = [
+// Rótulos por cenário. A MECÂNICA é idêntica; só mudam os textos: no Mundo
+// Devastado a "mágika" é substituída por poderes psíquicos que operam sob o
+// miasma (pág. 2 e 103 do suplemento).
+const MODOS_BASE: { id: Modo; nome: string }[] = [
   { id: "feitico", nome: "🔮 Feitiço" },
   { id: "pergaminho", nome: "📜 Pergaminho" },
   { id: "milagre", nome: "🙏 Milagre" },
 ];
+const MODOS_MD: { id: Modo; nome: string }[] = [
+  { id: "feitico", nome: "🧠 Poder Psíquico" },
+  { id: "pergaminho", nome: "🔋 Item Miasmático" },
+  { id: "milagre", nome: "🙏 Surto Psíquico" },
+];
 
-export default function MagiaView({ ficha, atualizar, logar }: Props) {
+export default function MagiaView({ ficha, atualizar, logar, cenario = false }: Props) {
+  const MODOS = cenario ? MODOS_MD : MODOS_BASE;
   const [modo, setModo] = useState<Modo>("feitico");
   const [np, setNp] = useState<NivelPoder>(1);
   const [oposicaoDados, setOposicaoDados] = useState(1); // resistência ou indiferença
@@ -135,16 +146,22 @@ export default function MagiaView({ ficha, atualizar, logar }: Props) {
 
       <p className="magia-dica">
         {ehMilagre
-          ? "Milagre: o maior dado precisa alcançar a maior Indiferença. Qualquer 1 dissipa. Karma não; Dado Heroico sim."
+          ? cenario
+            ? "Surto Psíquico: o maior dado precisa alcançar a maior Indiferença. Qualquer 1 dissipa. Karma não; Dado Heroico sim."
+            : "Milagre: o maior dado precisa alcançar a maior Indiferença. Qualquer 1 dissipa. Karma não; Dado Heroico sim."
           : ehPergaminho
-            ? "Pergaminho: NP fixo 2D6 (re-rola 1s), consumido no uso. Sem Refluxo."
-            : "Feitiço: o maior do NP precisa alcançar a maior Resistência. Karma não; Dado Heroico sim."}
+            ? cenario
+              ? "Item Miasmático: NP fixo 2D6 (re-rola 1s), consumido no uso. Sem Sobrecarga."
+              : "Pergaminho: NP fixo 2D6 (re-rola 1s), consumido no uso. Sem Refluxo."
+            : cenario
+              ? "Poder Psíquico: o maior do NP precisa alcançar a maior Resistência ao Miasma. Karma não; Dado Heroico sim."
+              : "Feitiço: o maior do NP precisa alcançar a maior Resistência. Karma não; Dado Heroico sim."}
       </p>
 
       <div className="magia-controles">
         {!ehPergaminho && (
           <div className="magia-campo">
-            <span>{ehMilagre ? "Urgência da prece" : "Nível de Poder"}</span>
+            <span>{ehMilagre ? (cenario ? "Intensidade do surto" : "Urgência da prece") : "Nível de Poder"}</span>
             <div className="np-botoes">
               {([1, 2, 3] as NivelPoder[]).map((n) => (
                 <button key={n} className={np === n ? "ativo" : ""} onClick={() => setNp(n)}>
@@ -183,7 +200,17 @@ export default function MagiaView({ ficha, atualizar, logar }: Props) {
       </div>
 
       <button className={`conjurar ${ehMilagre ? "milagre" : ""}`} onClick={lancar}>
-        {ehMilagre ? "🙏 CLAMAR MILAGRE" : ehPergaminho ? "📜 USAR PERGAMINHO" : "🔮 CONJURAR"}
+        {ehMilagre
+          ? cenario
+            ? "🙏 FORÇAR SURTO"
+            : "🙏 CLAMAR MILAGRE"
+          : ehPergaminho
+            ? cenario
+              ? "🔋 USAR ITEM"
+              : "📜 USAR PERGAMINHO"
+            : cenario
+              ? "🧠 MANIFESTAR"
+              : "🔮 CONJURAR"}
       </button>
 
       {resultado && (
@@ -200,7 +227,7 @@ export default function MagiaView({ ficha, atualizar, logar }: Props) {
           </div>
 
           <div className="mag-linha">
-            <span className="mag-rot">{ehMilagre ? "Sua prece" : "Seu NP"}</span>
+            <span className="mag-rot">{ehMilagre ? (cenario ? "Seu surto" : "Sua prece") : "Seu NP"}</span>
             <div className="mag-dados">
               {resultado.dados.map((d, i) => (
                 <button
@@ -224,7 +251,8 @@ export default function MagiaView({ ficha, atualizar, logar }: Props) {
 
           {av?.desfecho === "falha-1" && (
             <button className="refluxo-btn" onClick={aceitarRefluxo}>
-              🩸 Refluxo Arcano — sacrificar {av.golpesRefluxo} Golpe{av.golpesRefluxo > 1 ? "s" : ""}
+              🩸 {cenario ? "Sobrecarga de Miasma" : "Refluxo Arcano"} — sacrificar {av.golpesRefluxo}{" "}
+              Golpe{av.golpesRefluxo > 1 ? "s" : ""}
             </button>
           )}
           {avM?.desfecho === "dissipado" && (

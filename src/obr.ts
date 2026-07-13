@@ -7,10 +7,14 @@ import OBR from "@owlbear-rodeo/sdk";
 import type { DadoCritico, Difficulty, Rolagem } from "./ezd6";
 import { normalizarFicha } from "./ficha";
 import type { Ficha } from "./ficha";
+import { normalizarVeiculo } from "./veiculo";
+import type { Veiculo } from "./veiculo";
 
 export const CANAL_ROLAGEM = "com.ezd6.toolkit/roll";
 const CHAVE_ALVO = "com.ezd6.toolkit/alvo";
 const CHAVE_COMBATE = "com.ezd6.toolkit/combate";
+const CHAVE_CENARIO = "com.ezd6.toolkit/cenario";
+const CHAVE_VEICULOS = "com.ezd6.toolkit/veiculos";
 
 export type Papel = "GM" | "PLAYER";
 
@@ -49,7 +53,18 @@ export interface EntradaMagia {
   timestamp: number;
 }
 
-export type LogEntry = EntradaRolagem | EntradaMagia;
+/** Entrada de resistência ao miasma (cenário Mundo Devastado): rola X d6, salva com qualquer 6. */
+export interface EntradaMiasma {
+  tipo: "miasma";
+  id: string;
+  autor: string;
+  cor: string;
+  dados: number[];
+  sucesso: boolean;
+  timestamp: number;
+}
+
+export type LogEntry = EntradaRolagem | EntradaMagia | EntradaMiasma;
 
 export interface Jogador {
   nome: string;
@@ -151,6 +166,87 @@ export function aoMudarCombate(cb: (combate: boolean) => void): () => void {
     return () => combateListeners.delete(cb);
   }
   return OBR.room.onMetadataChange((md) => cb(md[CHAVE_COMBATE] === true));
+}
+
+// ---------- Cenário "Mundo Devastado" (opcional, controlado pelo mestre) ----------
+// Liga/desliga as regras extras do suplemento (resistência ao miasma, dados de
+// poder, contaminação, contágio, cobertura, poderes psíquicos). Mesmo padrão do
+// modo combate: metadata da sala, só o mestre altera, todos veem.
+
+let cenarioLocal = false;
+const cenarioListeners = new Set<(c: boolean) => void>();
+
+export async function obterCenario(): Promise<boolean> {
+  if (!dentroDoOwlbear) return cenarioLocal;
+  const md = await OBR.room.getMetadata();
+  return md[CHAVE_CENARIO] === true;
+}
+
+export async function definirCenario(cenario: boolean): Promise<void> {
+  if (!dentroDoOwlbear) {
+    cenarioLocal = cenario;
+    cenarioListeners.forEach((fn) => fn(cenario));
+    return;
+  }
+  await OBR.room.setMetadata({ [CHAVE_CENARIO]: cenario });
+}
+
+export function aoMudarCenario(cb: (cenario: boolean) => void): () => void {
+  if (!dentroDoOwlbear) {
+    cenarioListeners.add(cb);
+    return () => cenarioListeners.delete(cb);
+  }
+  return OBR.room.onMetadataChange((md) => cb(md[CHAVE_CENARIO] === true));
+}
+
+// ---------- Veículos (cenário Mundo Devastado, lista compartilhada) ----------
+// Guardados como uma lista única no metadata da sala (não têm "dono", então o
+// último a gravar vence — uso típico é o mestre gerenciar). Espelhado no
+// localStorage para funcionar no modo de teste fora do Owlbear.
+
+const LOCAL_VEICULOS = "ezd6-toolkit-veiculos";
+let veiculosLocal: Veiculo[] = [];
+const veiculosListeners = new Set<(v: Veiculo[]) => void>();
+
+function normalizarLista(bruto: unknown): Veiculo[] {
+  return Array.isArray(bruto) ? bruto.map(normalizarVeiculo) : [];
+}
+
+export async function obterVeiculos(): Promise<Veiculo[]> {
+  if (!dentroDoOwlbear) {
+    if (veiculosLocal.length === 0) {
+      try {
+        const cru = localStorage.getItem(LOCAL_VEICULOS);
+        if (cru) veiculosLocal = normalizarLista(JSON.parse(cru));
+      } catch {
+        /* ignora */
+      }
+    }
+    return veiculosLocal;
+  }
+  return normalizarLista((await OBR.room.getMetadata())[CHAVE_VEICULOS]);
+}
+
+export async function salvarVeiculos(lista: Veiculo[]): Promise<void> {
+  if (!dentroDoOwlbear) {
+    veiculosLocal = lista;
+    try {
+      localStorage.setItem(LOCAL_VEICULOS, JSON.stringify(lista));
+    } catch {
+      /* ignora */
+    }
+    veiculosListeners.forEach((fn) => fn(lista));
+    return;
+  }
+  await OBR.room.setMetadata({ [CHAVE_VEICULOS]: lista });
+}
+
+export function aoMudarVeiculos(cb: (lista: Veiculo[]) => void): () => void {
+  if (!dentroDoOwlbear) {
+    veiculosListeners.add(cb);
+    return () => veiculosListeners.delete(cb);
+  }
+  return OBR.room.onMetadataChange((md) => cb(normalizarLista(md[CHAVE_VEICULOS])));
 }
 
 // ---------- Ficha de personagem ----------

@@ -1,38 +1,50 @@
 import { useEffect, useRef, useState } from "react";
 import {
+  COBERTURA,
   DIFICULDADES,
+  adicionarDadoPoder,
   avaliar,
   critAberto,
   golpesDeCritico,
   rolar,
+  rolarPoolMiasma,
   rolarUmDado,
+  sucessoMiasma,
   textoDesfecho,
   valorCritico,
 } from "./ezd6";
 import type { Difficulty } from "./ezd6";
 import {
   aoMudarAlvo,
+  aoMudarCenario,
   aoMudarCombate,
   aoMudarJogador,
   aoMudarMinhaFicha,
+  aoMudarVeiculos,
   aoReceberRolagem,
   definirAlvo,
+  definirCenario,
   definirCombate,
   dentroDoOwlbear,
   enviarRolagem,
   obterAlvo,
+  obterCenario,
   obterCombate,
   obterFicha,
   obterJogador,
+  obterVeiculos,
   quandoPronto,
   salvarFicha,
+  salvarVeiculos,
 } from "./obr";
-import type { EntradaMagia, EntradaRolagem, Jogador, LogEntry } from "./obr";
+import type { EntradaMagia, EntradaMiasma, EntradaRolagem, Jogador, LogEntry } from "./obr";
 import { FICHA_PADRAO } from "./ficha";
 import type { Ficha } from "./ficha";
+import type { Veiculo } from "./veiculo";
 import FichaView from "./FichaView";
 import MagiaView from "./MagiaView";
 import MesaView from "./MesaView";
+import VeiculoView from "./VeiculoView";
 import "./App.css";
 
 // Posições dos pips para cada face do dado (grade 3x3).
@@ -110,15 +122,120 @@ function Stepper({
   );
 }
 
+/**
+ * Desafio com Conjunto de Dados (Mundo Devastado, pág. 102): o mestre monta um
+ * pool de 3–6 dados de dificuldade. Qualquer 1 é removido na hora (se saírem só
+ * 1s, o desafio degrada). Os jogadores rolam e, a cada dado que iguale/supere um
+ * dado de dificuldade, o mestre clica para removê-lo. Sem dados = desafio vencido.
+ */
+function DesafioDados() {
+  const [qtd, setQtd] = useState(4);
+  const [pool, setPool] = useState<{ valor: number; fora: boolean }[] | null>(null);
+  const [degradado, setDegradado] = useState(false);
+
+  function montar() {
+    const dados = Array.from({ length: qtd }, () => rolarUmDado());
+    setDegradado(dados.every((d) => d === 1));
+    setPool(dados.map((v) => ({ valor: v, fora: v === 1 }))); // 1s já saem
+  }
+  function alternar(i: number) {
+    setPool((p) => p && p.map((d, j) => (j === i ? { ...d, fora: !d.fora } : d)));
+  }
+
+  const restantes = pool ? pool.filter((d) => !d.fora).length : 0;
+  const vencido = pool !== null && restantes === 0;
+
+  return (
+    <section className="desafio-dados">
+      <label>🧩 Desafio com Conjunto de Dados (mestre)</label>
+      <div className="desafio-montar">
+        <div className="mini-stepper">
+          <button onClick={() => setQtd(Math.max(3, qtd - 1))}>−</button>
+          <b>{qtd}</b>
+          <button onClick={() => setQtd(Math.min(6, qtd + 1))}>+</button>
+        </div>
+        <button className="ficha-btn" onClick={montar}>
+          🎲 Montar desafio
+        </button>
+      </div>
+      {pool && (
+        <>
+          <div className="desafio-pool">
+            {pool.map((d, i) => (
+              <button
+                key={i}
+                className={`desafio-dado ${d.fora ? "fora" : ""}`}
+                onClick={() => alternar(i)}
+                title={d.fora ? "Superado (clique para voltar)" : "Clique quando os jogadores superarem"}
+              >
+                {d.valor}
+              </button>
+            ))}
+          </div>
+          {degradado ? (
+            <small className="combate-dica">Só saíram 1s — o desafio degrada e não exige esforço.</small>
+          ) : vencido ? (
+            <div className="desafio-vencido">✅ Desafio superado!</div>
+          ) : (
+            <small className="combate-dica">
+              Faltam {restantes} dado{restantes > 1 ? "s" : ""}. Karma não vale aqui; Dado Heroico/Poder sim.
+            </small>
+          )}
+        </>
+      )}
+    </section>
+  );
+}
+
+/**
+ * Dados de Vilania (Mundo Devastado, pág. 107): recurso do mestre para PNJs/vilões
+ * especiais (1–3). Apenas 1 por teste, substituindo um dado rolado — exatamente
+ * como o Dado Heroico. Estado local/efêmero do mestre.
+ */
+function DadosVilania() {
+  const [dados, setDados] = useState(0);
+  const [ultimo, setUltimo] = useState<number | null>(null);
+  return (
+    <section className="desafio-dados vilania">
+      <label>😈 Dados de Vilania (mestre)</label>
+      <div className="desafio-montar">
+        <div className="mini-stepper">
+          <button onClick={() => setDados(Math.max(0, dados - 1))}>−</button>
+          <b>{dados}</b>
+          <button onClick={() => setDados(Math.min(9, dados + 1))}>+</button>
+        </div>
+        <button
+          className="ficha-btn"
+          disabled={dados <= 0}
+          onClick={() => {
+            setUltimo(rolarUmDado());
+            setDados(dados - 1);
+          }}
+        >
+          🎲 Usar (substitui 1 dado)
+        </button>
+      </div>
+      {ultimo !== null && (
+        <div className="vilania-res">
+          Saiu <b>{ultimo}</b> — substitua um dado da jogada do PNJ por este.
+        </div>
+      )}
+      <small className="combate-dica">1 por teste, como o Dado Heroico do vilão. Recomece a cada cena.</small>
+    </section>
+  );
+}
+
 export default function App() {
   const [jogador, setJogador] = useState<Jogador>({ nome: "…", cor: "#7c3aed", papel: "PLAYER" });
   const [alvo, setAlvo] = useState<Difficulty>(3);
   const [emCombate, setEmCombate] = useState(false);
+  const [cenario, setCenario] = useState(false); // "Mundo Devastado" ligado/desligado (mestre)
   const [trunfos, setTrunfos] = useState(0);
   const [estorvos, setEstorvos] = useState(0);
   const [log, setLog] = useState<LogEntry[]>([]);
   const [ficha, setFicha] = useState<Ficha>(FICHA_PADRAO);
-  const [aba, setAba] = useState<"rolar" | "magia" | "ficha" | "mesa">("rolar");
+  const [veiculos, setVeiculos] = useState<Veiculo[]>([]);
+  const [aba, setAba] = useState<"rolar" | "magia" | "ficha" | "veiculos" | "mesa">("rolar");
   // A MINHA rolagem atual (editável): fonte síncrona local, independente do log
   // (que só atualiza após o eco do broadcast). Evita perder a janela de edição
   // quando outro jogador rola, e evita duplo-débito em cliques rápidos.
@@ -134,8 +251,14 @@ export default function App() {
   alvoRef.current = alvo;
   const combateRef = useRef(emCombate);
   combateRef.current = emCombate;
+  const cenarioRef = useRef(cenario);
+  cenarioRef.current = cenario;
   const fichaRef = useRef(ficha);
   fichaRef.current = ficha;
+  const veiculosRef = useRef(veiculos);
+  veiculosRef.current = veiculos;
+  const ultimoVeiculosRef = useRef(""); // eco da própria gravação (igual à ficha)
+  const salvarVeiculosTimer = useRef<number | null>(null);
   const minhaRef = useRef(minhaEntrada);
   minhaRef.current = minhaEntrada;
   const salvarTimer = useRef<number | null>(null);
@@ -155,14 +278,30 @@ export default function App() {
       obterJogador().then(setJogador);
       obterAlvo().then(setAlvo);
       obterCombate().then(setEmCombate);
+      obterCenario().then(setCenario);
       obterFicha().then((f) => {
         fichaRef.current = f;
         ultimoSalvoRef.current = JSON.stringify(f);
         setFicha(f);
       });
+      obterVeiculos().then((l) => {
+        veiculosRef.current = l;
+        ultimoVeiculosRef.current = JSON.stringify(l);
+        setVeiculos(l);
+      });
       cancelamentos.push(aoMudarJogador(setJogador));
       cancelamentos.push(aoMudarAlvo(setAlvo));
       cancelamentos.push(aoMudarCombate(setEmCombate));
+      cancelamentos.push(aoMudarCenario(setCenario));
+      cancelamentos.push(
+        aoMudarVeiculos((l) => {
+          const j = JSON.stringify(l);
+          if (j === ultimoVeiculosRef.current) return; // eco da minha própria gravação
+          ultimoVeiculosRef.current = j;
+          veiculosRef.current = l;
+          setVeiculos(l);
+        }),
+      );
       cancelamentos.push(
         aoMudarMinhaFicha((f) => {
           const j = JSON.stringify(f);
@@ -188,6 +327,11 @@ export default function App() {
     });
     return () => cancelamentos.forEach((c) => c());
   }, []);
+
+  // Se o cenário for desligado, a aba Veículos deixa de existir: volta ao Rolar.
+  useEffect(() => {
+    if (!cenario && aba === "veiculos") setAba("rolar");
+  }, [cenario, aba]);
 
   /** Aplica uma mudança na minha rolagem (síncrono no ref) e transmite (mesma id => substitui em todos). */
   function aplicarMinha(mut: (e: EntradaRolagem) => EntradaRolagem) {
@@ -237,6 +381,17 @@ export default function App() {
       ultimoSalvoRef.current = JSON.stringify(nova);
       salvarFicha(nova);
     }, 400);
+  }
+
+  /** Atualiza a lista de veículos (estado imediato) e persiste com debounce (igual à ficha). */
+  function atualizarVeiculos(lista: Veiculo[]) {
+    veiculosRef.current = lista;
+    setVeiculos(lista);
+    if (salvarVeiculosTimer.current) clearTimeout(salvarVeiculosTimer.current);
+    salvarVeiculosTimer.current = window.setTimeout(() => {
+      ultimoVeiculosRef.current = JSON.stringify(lista);
+      salvarVeiculos(lista);
+    }, 300);
   }
 
   /** Reivindica +1 Karma pela falha. Só se ainda NÃO resgatou a jogada (Karma ou Dado Heroico). */
@@ -348,6 +503,32 @@ export default function App() {
     });
   }
 
+  /** Resistência ao Miasma (Mundo Devastado): rola X d6 e salva com qualquer 6. Vai direto ao histórico. */
+  function rolarMiasma() {
+    const dados = rolarPoolMiasma(fichaRef.current.resistenciaMiasma);
+    const entry: EntradaMiasma = {
+      tipo: "miasma",
+      id: crypto.randomUUID(),
+      autor: jogadorRef.current.nome,
+      cor: jogadorRef.current.cor,
+      dados,
+      sucesso: sucessoMiasma(dados),
+      timestamp: Date.now(),
+    };
+    enviarRolagem(entry);
+  }
+
+  /** Dado de Poder: adiciona um dado à jogada atual (pega o maior) e debita o pool. */
+  function usarDadoPoder() {
+    const e = minhaRef.current;
+    if (!e || fichaRef.current.dadosPoder <= 0) return;
+    animarRolagem();
+    atualizarFicha({ dadosPoder: fichaRef.current.dadosPoder - 1 });
+    setKarmaStage(0);
+    setKarmaCritStage(0);
+    aplicarMinha((x) => ({ ...x, rolagem: adicionarDadoPoder(x.rolagem, rolarUmDado()) }));
+  }
+
   const saldo = trunfos - estorvos;
   const ultima = minhaEntrada; // o card de resultado mostra sempre a MINHA rolagem
   const av = ultima ? avaliar(ultima.rolagem, ultima.karma) : null;
@@ -356,7 +537,7 @@ export default function App() {
   const ultimoCritico = ultima && ultima.criticos.length > 0 ? ultima.criticos.at(-1)! : null;
 
   return (
-    <div className="app">
+    <div className={`app ${cenario ? "cenario-md" : ""}`}>
       <header className="topo">
         <div className="logo">
           EZ<span>D6</span>
@@ -372,11 +553,16 @@ export default function App() {
           🎲 Rolar
         </button>
         <button className={aba === "magia" ? "ativo" : ""} onClick={() => setAba("magia")}>
-          🔮 Magia
+          {cenario ? "🧠 Psíquico" : "🔮 Magia"}
         </button>
         <button className={aba === "ficha" ? "ativo" : ""} onClick={() => setAba("ficha")}>
           📋 Ficha
         </button>
+        {cenario && (
+          <button className={aba === "veiculos" ? "ativo" : ""} onClick={() => setAba("veiculos")}>
+            🚗 Veículos
+          </button>
+        )}
         {ehMestre && (
           <button className={aba === "mesa" ? "ativo" : ""} onClick={() => setAba("mesa")}>
             👑 Mesa
@@ -385,9 +571,12 @@ export default function App() {
       </nav>
 
       {aba === "magia" && (
-        <MagiaView ficha={ficha} atualizar={atualizarFicha} logar={registrarMagia} />
+        <MagiaView ficha={ficha} atualizar={atualizarFicha} logar={registrarMagia} cenario={cenario} />
       )}
-      {aba === "ficha" && <FichaView ficha={ficha} atualizar={atualizarFicha} />}
+      {aba === "ficha" && <FichaView ficha={ficha} atualizar={atualizarFicha} cenario={cenario} />}
+      {aba === "veiculos" && cenario && (
+        <VeiculoView veiculos={veiculos} setVeiculos={atualizarVeiculos} />
+      )}
       {aba === "mesa" && ehMestre && <MesaView />}
 
       {aba === "rolar" && (
@@ -437,6 +626,56 @@ export default function App() {
         )}
       </section>
 
+      <section className="cenario-secao">
+        {ehMestre ? (
+          <button
+            className={`combate-toggle cenario-toggle ${cenario ? "ativo" : ""}`}
+            onClick={() => definirCenario(!cenario)}
+          >
+            <span>🌍 Cenário: Mundo Devastado</span>
+            <span className="combate-estado">{cenario ? "LIGADO" : "desligado"}</span>
+          </button>
+        ) : (
+          cenario && <div className="combate-badge cenario-badge">🌫️ Mundo Devastado</div>
+        )}
+      </section>
+
+      {cenario && (
+        <section className="cobertura">
+          <label>🎯 Cobertura — dificuldade para acertar quem se protege</label>
+          <div className="cobertura-niveis">
+            {COBERTURA.map((c) =>
+              ehMestre ? (
+                <button
+                  key={c.valor}
+                  className={alvo === c.valor ? "ativo" : ""}
+                  onClick={() => definirAlvo(c.valor)}
+                  title={`Definir dificuldade ${c.valor}+`}
+                >
+                  <strong>{c.valor}+</strong>
+                  <small>{c.nome}</small>
+                </button>
+              ) : (
+                <div key={c.valor} className="cobertura-item">
+                  <strong>{c.valor}+</strong>
+                  <small>{c.nome}</small>
+                </div>
+              ),
+            )}
+          </div>
+          <small className="combate-dica">Explosões e armas incendiárias ignoram cobertura.</small>
+        </section>
+      )}
+
+      {cenario && (
+        <section className="pool-miasma">
+          <button className="rolar-miasma" onClick={rolarMiasma}>
+            🟢 Resistência ao Miasma ({ficha.resistenciaMiasma}D6)
+          </button>
+          <small className="combate-dica">Salva com um 6 — o resultado vai ao histórico. Ajuste os dados na Ficha.</small>
+        </section>
+      )}
+
       <section className="modificadores modificadores-2">
         <Stepper rotulo="Trunfo" valor={trunfos} setValor={setTrunfos} cor="#22c55e" />
         <Stepper rotulo="Estorvo" valor={estorvos} setValor={setEstorvos} cor="#ef4444" />
@@ -460,6 +699,11 @@ export default function App() {
           <span className="disp">✨ {ficha.dadosHeroicos}</span>
         ) : (
           <span className="usado">0 (recupere na Ficha)</span>
+        )}
+        {cenario && (
+          <>
+            {" · "}🔋 Poder: <b className="karma-pool">{ficha.dadosPoder}</b>
+          </>
         )}
       </div>
 
@@ -515,6 +759,12 @@ export default function App() {
                   : "Dado Heroico (re-rolar)"}
               </button>
             )}
+          {/* Dado de Poder (Mundo Devastado): adiciona um dado à jogada, pega o maior */}
+          {souDono && cenario && ficha.dadosPoder > 0 && av.desfecho !== "critico" && (
+            <button className="heroico-btn poder-btn" onClick={usarDadoPoder}>
+              🔋 Dado de Poder (+1 dado)
+            </button>
+          )}
           {souDono &&
             !ultima.karmaGanho &&
             !ultima.rolagem.umNatural &&
@@ -632,11 +882,35 @@ export default function App() {
         </section>
       )}
 
+      {cenario && ehMestre && <DesafioDados />}
+      {cenario && ehMestre && <DadosVilania />}
+
       <section className="historico">
         <h2>Histórico</h2>
         {log.length === 0 && <p className="vazio">Nenhuma rolagem ainda. Aperte ROLAR!</p>}
         <ul>
           {log.map((entry) => {
+            if (entry.tipo === "miasma") {
+              return (
+                <li key={entry.id} className={`desfecho-${entry.sucesso ? "sucesso" : "falha"}`}>
+                  <span className="autor" style={{ color: entry.cor }}>
+                    {entry.autor}
+                  </span>
+                  <span className="mini-dados">
+                    🟢{" "}
+                    {entry.dados.map((v, i) => (
+                      <b key={i} className={v === 6 ? "vale" : ""}>
+                        {v}
+                      </b>
+                    ))}
+                  </span>
+                  <span className="alvo-mini">miasma</span>
+                  <span className="desfecho-mini">
+                    {entry.sucesso ? "Resistiu ao miasma" : "Sucumbiu (sem 6)"}
+                  </span>
+                </li>
+              );
+            }
             if (entry.tipo === "magia") {
               const icone =
                 entry.modo === "milagre" ? "🙏" : entry.modo === "pergaminho" ? "📜" : "🔮";

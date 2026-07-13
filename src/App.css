@@ -656,3 +656,180 @@
   font-size: 10px;
   margin-left: 2px;
 }
+
+/* ---------- Cenário "Mundo Devastado" ---------- */
+.app.cenario-md .logo span {
+  color: var(--sucesso);
+}
+.cenario-secao {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+/* O toggle reusa .combate-toggle, mas com acento VERDE (miasma) em vez do vermelho de combate. */
+.cenario-toggle.ativo {
+  border-color: var(--sucesso);
+  color: var(--texto);
+  background: rgba(34, 197, 94, 0.15);
+}
+.cenario-toggle.ativo .combate-estado {
+  background: var(--sucesso);
+  color: #04210f;
+}
+.cenario-badge {
+  color: var(--sucesso);
+  background: rgba(34, 197, 94, 0.12);
+}
+
+/* Cobertura (tiroteio) */
+.cobertura label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--texto-fraco);
+  margin: 0 0 6px;
+  display: block;
+}
+.cobertura-niveis {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  margin-bottom: 4px;
+}
+.cobertura-niveis button,
+.cobertura-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 8px 2px;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  background: var(--bg2);
+  color: var(--texto);
+  cursor: pointer;
+  transition: all 0.12s;
+}
+.cobertura-item {
+  cursor: default;
+}
+.cobertura-niveis button strong,
+.cobertura-item strong {
+  font-size: 18px;
+}
+.cobertura-niveis button small,
+.cobertura-item small {
+  font-size: 9px;
+  color: var(--texto-fraco);
+  text-align: center;
+  line-height: 1.1;
+}
+.cobertura-niveis button.ativo {
+  border-color: var(--sucesso);
+  background: var(--verde-escuro);
+}
+
+/* Botão de resistência ao miasma */
+.pool-miasma {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.rolar-miasma {
+  border: 2px solid var(--sucesso);
+  background: rgba(34, 197, 94, 0.15);
+  color: #dff5c8;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  width: 100%;
+}
+.rolar-miasma:active {
+  transform: scale(0.98);
+}
+
+/* Dado de Poder (variante verde do botão heroico) */
+.poder-btn {
+  border-color: var(--sucesso);
+  background: rgba(34, 197, 94, 0.15);
+  color: #bff0cf;
+}
+
+/* Desafio com Conjunto de Dados (helper do mestre) */
+.desafio-dados {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  border: 1px dashed #3a3a44;
+  border-radius: 10px;
+  padding: 10px;
+}
+.desafio-dados > label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--texto-fraco);
+}
+.desafio-montar {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.desafio-dados .mini-stepper {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg2);
+  border-radius: 8px;
+  padding: 2px 6px;
+}
+.desafio-dados .mini-stepper button {
+  border: none;
+  background: transparent;
+  color: var(--texto);
+  font-size: 18px;
+  cursor: pointer;
+  width: 22px;
+}
+.desafio-dados .ficha-btn {
+  border: 2px solid var(--sucesso);
+  background: rgba(34, 197, 94, 0.15);
+  color: #dff5c8;
+  border-radius: 8px;
+  padding: 6px 12px;
+  font-weight: 700;
+  cursor: pointer;
+}
+.desafio-pool {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.desafio-dado {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: 2px solid var(--falha);
+  background: rgba(239, 68, 68, 0.12);
+  color: var(--texto);
+  font-weight: 900;
+  font-size: 16px;
+  cursor: pointer;
+}
+.desafio-dado.fora {
+  border-color: #3a3a44;
+  background: var(--bg2);
+  color: var(--texto-fraco);
+  text-decoration: line-through;
+  opacity: 0.6;
+}
+.desafio-vencido {
+  font-weight: 800;
+  color: var(--sucesso);
+}
+.vilania-res {
+  font-size: 13px;
+  color: var(--texto);
+}

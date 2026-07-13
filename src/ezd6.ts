@@ -145,3 +145,41 @@ export function textoDesfecho(desfecho: Desfecho, umNatural: boolean, emCombate 
       return umNatural ? "Falha (1 natural)" : "Falha";
   }
 }
+
+// ---------- Regras do cenário "Mundo Devastado" (suplemento) ----------
+
+/**
+ * Resistência ao Miasma (pág. 103): rola um conjunto de d6 (a quantidade é o
+ * valor de resistência da personagem) e você se salva se sair PELO MENOS UM 6.
+ * Também é como PNJs com resistência ao miasma fazem suas salvaguardas.
+ */
+export function rolarPoolMiasma(qtd: number, rng: RNG = Math.random): number[] {
+  const n = Math.max(1, Math.floor(qtd));
+  return Array.from({ length: n }, () => rolarD6(rng));
+}
+
+/** Sucesso na resistência ao miasma: qualquer 6 no conjunto salva. */
+export function sucessoMiasma(dados: number[]): boolean {
+  return dados.includes(6);
+}
+
+/**
+ * Dado de Poder (pág. 110): recurso comprado com XP que "reseta" ao máximo no
+ * início de cada sessão. Ao contrário do Dado Heroico, NÃO substitui dados já
+ * rolados — apenas ADICIONA um dado à jogada recém-feita (os 1s ainda contam),
+ * funcionando "como um Trunfo, mas rolado depois". Por isso o dado que vale
+ * passa a ser o MAIOR do conjunto expandido.
+ */
+export function adicionarDadoPoder(r: Rolagem, novo: number): Rolagem {
+  const dados = [...r.dados, novo];
+  const indiceEscolhido = dados.reduce((maior, v, i) => (v > dados[maior] ? i : maior), 0);
+  const natural = dados[indiceEscolhido];
+  return { ...r, dados, indiceEscolhido, natural, umNatural: natural === 1 };
+}
+
+/** Níveis de cobertura em tiroteios (pág. 101): dificuldade para ACERTAR quem se protege. */
+export const COBERTURA: { valor: Difficulty; nome: string }[] = [
+  { valor: 4, nome: "Leve / esparsa" },
+  { valor: 5, nome: "Ruínas / média" },
+  { valor: 6, nome: "Fortificação / densa" },
+];

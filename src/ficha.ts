@@ -30,9 +30,32 @@ export interface Ficha {
    * gastando 5 Karma.
    */
   dadosHeroicos: number;
+
+  // Cenário "Mundo Devastado" (suplemento). Só usados quando o cenário está
+  // ligado; defaults neutros para não afetar mesas do livro básico.
+  /** Resistência ao Miasma: quantidade de d6 rolados (salva com qualquer 6). Pág. 103. */
+  resistenciaMiasma: number;
+  /** Dados de Poder disponíveis (adicionam dados à jogada; resetam por sessão). Pág. 110. */
+  dadosPoder: number;
+  /** Máximo de Dados de Poder (para onde o "resetar sessão" volta). */
+  dadosPoderMax: number;
+  /** Possui escudo? Permite uma 2ª salvaguarda de armadura por rodada. Pág. 7. */
+  escudo: boolean;
+  /** Nível de contaminação (0–3). Ao chegar a 3, perde 1 Golpe permanente e zera. Pág. 104. */
+  contaminacao: number;
+  /** Estado de contágio: sadio, debilitado (Estorvo até curar) ou doente. Pág. 104. */
+  contagio: "nenhum" | "debilitado" | "doente";
+  /** Atordoado: Estorvo em tudo e não corre no próximo turno. Pág. 101. */
+  atordoado: boolean;
+  /** Suprimentos atuais (comida/água/munição). Pág. 45. */
+  suprimentos: number;
+  /** Máximo de suprimentos que carrega (5 base, +5 mochila, +3 Acumulador). */
+  suprimentosMax: number;
 }
 
 export const PADROES_VIDA = ["Miserável", "Pobre", "Estável", "Rico", "Nobre", "Realeza"];
+/** Níveis de Riqueza do cenário "Mundo Devastado" (pág. 43) — substituem os Padrões de Vida. */
+export const NIVEIS_RIQUEZA = ["Liso", "Modesto", "Estável", "Brilhoso", "Cromado", "Endinheirado"];
 
 export const FICHA_PADRAO: Ficha = {
   nome: "",
@@ -52,6 +75,15 @@ export const FICHA_PADRAO: Ficha = {
   armadura: 0,
   karma: 3,
   dadosHeroicos: 1,
+  resistenciaMiasma: 1,
+  dadosPoder: 0,
+  dadosPoderMax: 0,
+  escudo: false,
+  contaminacao: 0,
+  contagio: "nenhum",
+  atordoado: false,
+  suprimentos: 5,
+  suprimentosMax: 5,
 };
 
 /** Garante que um objeto vindo do storage tenha todos os campos (retrocompat). */
